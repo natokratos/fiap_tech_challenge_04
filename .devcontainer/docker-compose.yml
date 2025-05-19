@@ -1,0 +1,59 @@
+version: "2.34.0"
+services:
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "127.0.0.1:5432:5432"   
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data 
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8090:8080
+
+  localstack:
+    container_name: "localstack-main"
+    image: localstack/localstack-pro  # required for Pro
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+    environment:
+# Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
+     #"LOCALSTACK_AUTH_TOKEN": "${LOCALSTACK_AUTH_TOKEN:-}"  # required for Pro, not processed via template due to security reasons
+     #"LOCALSTACK_API_KEY": "${LOCALSTACK_API_KEY:-}"
+     #// LocalStack configuration: https://docs.localstack.cloud/references/configuration/
+     "ACTIVATE_PRO": "0"
+     #"DEBUG": "1"
+     #"LS_LOG": "trace"
+     #"PERSISTENCE": "false"
+     #"AUTO_LOAD_POD": " "
+     #"ENFORCE_IAM": "false"
+     #"AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID:-local}"
+     #"AWS_SECRET_ACCESS_KEY":  "${AWS_SECRET_ACCESS_KEY:-local}"
+     #"AWS_ENDPOINT_URL": "http://localhost.localstack.cloud:4566"
+     #"AWS_REGION": "us-east-1"
+     #"AWS_DEFAULT_REGION": "us-east-1"
+     #"IMAGE_NAME": "localstack/localstack:latest"
+     #"LOCALSTACK_VOLUME_DIR": "/data"
+    volumes:
+# you could also place your main.tf in `./ready.d` and set "./ready.d:/etc/localstack/init/ready.d"
+      - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+      - "../package.zip:/root/package.zip"
+      - "../app_package.zip:/root/app_package.zip"
+      - "./volume:/var/lib/localstack"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tech04
+    tty: true
+    volumes:
+      - "../:/app"
+
+volumes:
+  pgdata:
