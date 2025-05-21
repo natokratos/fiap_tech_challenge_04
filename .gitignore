@@ -169,3 +169,5 @@ cache
 .volume
 IBOV*
 !.devcontainer/.env
+app_package.zip
+teste
