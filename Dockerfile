@@ -85,4 +85,4 @@ RUN poetry install && \
         # pip3 install awscli && \
         # pip3 install fastparquet
 #CMD [ "/bin/bash" ]
-CMD [ "poetry", "run", "python3.13", "src/main.py" ]
+CMD [ "nohup", "poetry", "run", "python3.13", "src/main.py", "&" ]
