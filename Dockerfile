@@ -18,7 +18,7 @@ RUN echo 'Package: * \
             ' | tee /etc/apt/preferences.d/mozilla
 #RUN apt-get -y install firefox \
 RUN apt-get -y install gnome-browser-connector \
-        libffi-dev \
+        firefox-esr \
         software-properties-common
 
 # RUN add-apt-repository ppa:deadsnakes/ppa && \
@@ -85,4 +85,5 @@ RUN poetry install && \
         # pip3 install awscli && \
         # pip3 install fastparquet
 #CMD [ "/bin/bash" ]
-CMD [ "nohup", "poetry", "run", "python3.13", "src/main.py", "&" ]
+#CMD [ "nohup", "poetry", "run", "python3.13", "src/main.py", "&" ]
+CMD [ "poetry", "run", "python3.13", "src/main.py" ]

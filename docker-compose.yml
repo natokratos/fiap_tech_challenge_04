@@ -1,3 +1,10 @@
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
 services:
   db:
     image: postgres
@@ -8,12 +15,18 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - pgdata:/var/lib/postgresql/data 
+    networks:
+      default:
+        ipv4_address: 172.30.0.1
 
   adminer:
     image: adminer
     restart: always
     ports:
       - 8090:8080
+    networks:
+      default:
+        ipv4_address: 172.30.0.2
 
   localstack:
     container_name: "localstack-main"
@@ -45,6 +58,10 @@ services:
       - "../app_package.zip:/root/app_package.zip"
       - "./volume:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      default:
+        ipv4_address: 172.30.0.3
+
   app:
     build:
       context: .
@@ -55,6 +72,9 @@ services:
       - "8080:8080"
     volumes:
       - ".:/app"
+    networks:
+      default:
+        ipv4_address: 172.30.0.4
 
 volumes:
   pgdata:
