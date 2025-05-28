@@ -1,8 +1,8 @@
 import os 
 import uvicorn
 
-from scrapper import Scrapper
-from aws_s3 import AwsS3
+#from scrapper import Scrapper
+#from aws_s3 import AwsS3
 from api import ApiEndpoints
 
 def run():
