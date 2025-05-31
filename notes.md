@@ -64,3 +64,8 @@ aws iam list-role-policies --role-name lambda-exec
 
 SELECT schema_name FROM information_schema.schemata
 SELECT table_schema, table_name FROM information_schema.tables
+
+docker rm db04
+docker volume rm fiap_tech_challenge_04_pgdata
+
+
