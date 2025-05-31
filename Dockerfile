@@ -19,7 +19,8 @@ RUN echo 'Package: * \
 #RUN apt-get -y install firefox \
 RUN apt-get -y install gnome-browser-connector \
         firefox-esr \
-        software-properties-common
+        software-properties-common \
+        cron
 
 # RUN add-apt-repository ppa:deadsnakes/ppa && \
 #     apt-get update && \
@@ -66,13 +67,18 @@ ENV PATH="${PATH}:${POETRY_VENV}/bin"
 #         fastparquet \
 #     chmod -Rf 777 /app
 
+COPY cron-init /etc/cron.d/cron-init
+COPY entrypoint.sh /tmp/entrypoint.sh
 ADD . /app
 
 WORKDIR /app
 
 # Install dependencies
-RUN poetry install && \
-        poetry lock
+RUN poetry lock && \
+        poetry install && \
+        touch /var/log/cron.log && \
+        crontab /etc/cron.d/cron-init && \
+        chmod -Rf 777 /tmp/entrypoint.sh
 
 # Run your app
 #COPY . /app
@@ -86,4 +92,5 @@ RUN poetry install && \
         # pip3 install fastparquet
 #CMD [ "/bin/bash" ]
 #CMD [ "nohup", "poetry", "run", "python3.13", "src/main.py", "&" ]
-CMD [ "poetry", "run", "python3.13", "src/main.py" ]
+#CMD [ "poetry", "run", "python3.13", "src/main.py" ]
+ENTRYPOINT [ "/tmp/entrypoint.sh" ]

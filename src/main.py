@@ -4,13 +4,13 @@ import uvicorn
 #from scrapper import Scrapper
 #from aws_s3 import AwsS3
 from api import ApiEndpoints
+#import scheduler
 
 def run():
 
     '''
     Execução do scrapper para extracao dos dados
     '''
-
     uvicorn.run("api:app", host="0.0.0.0", port=8080, reload=True)
 
     api = ApiEndpoints()
@@ -25,5 +25,8 @@ def run():
 #            aws_s3.upload_file("raw", f)
 
 if __name__ == '__main__':
+
+#    scheduler.run()
+#    print("TESTE TESTE1")
 
     run()

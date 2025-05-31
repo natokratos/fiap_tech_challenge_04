@@ -15,7 +15,7 @@ class ApiEndpoints:
                 self.aws_endpoint = os.environ['AWS_ENDPOINT_URL']
         except KeyError as e:
             self.aws_endpoint = 'http://localhost:4566'
-        print(f"AWS_ENDPOINT_URL [ {self.aws_endpoint} ]")
+        # print(f"AWS_ENDPOINT_URL [ {self.aws_endpoint} ]")
         
         @app.get("/")
         async def read_root():
