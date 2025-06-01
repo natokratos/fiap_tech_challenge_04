@@ -149,7 +149,12 @@ class Scrapper:
         print(f"Importando CSV {file_name}")
 
         try:
-            connection = psycopg2.connect(database="postgres", user='postgres', password='postgres', host="localhost", port=5432)
+            connection = psycopg2.connect(database="app", 
+                                        user='postgres', 
+                                        password='postgres', 
+                                        host="172.30.0.2", 
+                                        port=5432, 
+                                        options="-c search_path=ml")
             connection.autocommit = True
         except:
             print("Nao consegui conectar ao banco de dados")
@@ -161,7 +166,8 @@ class Scrapper:
             f = open(file_name, 'r')
             cursor.copy_from(f, "raw_data", sep=';')
             f.close()
-        except:
+        except Exception as e:
+            print(f"Exception {repr(e)}")
             print(f"Os dados ja foram inseridos no banco de dados [{file_name}]")
 
     def run(self):

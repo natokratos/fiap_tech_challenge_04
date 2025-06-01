@@ -27,8 +27,8 @@ model = LinearRegression()
 class Pipeline:
 
     def __init__(self):
-        self.database = 'postgres'
-        self.table = 'raw_data'
+        self.database = 'app'
+        self.table = 'ml.raw_data'
         self.metric_date = ''
         self.model = LinearRegression()
         self.model_dump = bytes()
@@ -38,10 +38,10 @@ class Pipeline:
         self.y_test = {}
 
         try:
-            connection = psycopg2.connect(database=self.database, user='postgres', password='postgres', host="localhost", port=5432)
+            connection = psycopg2.connect(database=self.database, user='postgres', password='postgres', host="172.30.0.2", port=5432)
             connection.autocommit = True
         except:
-            print("Nao consegui conectar ao banco de dados")
+            print(f"Nao consegui conectar ao banco de dados ({self.database}, 172.30.0.2)")
             return
 
         # Read data into a Pandas DataFrame

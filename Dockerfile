@@ -17,10 +17,14 @@ RUN echo 'Package: * \
             Pin-Priority: 1000 \
             ' | tee /etc/apt/preferences.d/mozilla
 #RUN apt-get -y install firefox \
-RUN apt-get -y install gnome-browser-connector \
+RUN apt-get update && \
+        apt-get -y upgrade
+RUN apt-get -y --fix-broken install gnome-browser-connector \
         firefox-esr \
         software-properties-common \
-        cron
+        cron \
+        netcat-openbsd \
+        telnet
 
 # RUN add-apt-repository ppa:deadsnakes/ppa && \
 #     apt-get update && \
