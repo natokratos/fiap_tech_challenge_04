@@ -20,10 +20,6 @@ from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_percentage_error
 from sklearn.utils.validation import check_is_fitted
 from sklearn.exceptions import NotFittedError
-from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
-import yfinance as yf
 import joblib
 
 model = LinearRegression()
@@ -31,48 +27,64 @@ model = LinearRegression()
 class Pipeline:
 
     def __init__(self):
-        self.symbol = 'DIS'
-        self.start_date = '2025-01-01'
-        self.end_date = '2025-05-01'
-    
-        print(f"Baixando os dados do Yahoo Finance ...\n")
-        data = yf.download(self.symbol, start=self.start_date, end=self.end_date)
-        print(f"data {data}")
+        self.database = 'app'
+        self.table = 'ml.raw_data'
+        self.metric_date = ''
+        self.model = LinearRegression()
+        self.model_dump = bytes()
+        self.x_train = {}
+        self.x_test = {}
+        self.y_train = {}
+        self.y_test = {}
 
-        data = data.dropna()
+        try:
+            connection = psycopg2.connect(database=self.database, user='postgres', password='postgres', host="172.30.0.2", port=5432)
+            connection.autocommit = True
+        except:
+            print(f"Nao consegui conectar ao banco de dados ({self.database}, 172.30.0.2)")
+            return
 
-        # Remove rows with '.' and convert the column to float
-        data = data[data.DTWEXB != '.']
-        data['DTWEXB'] = data['DTWEXB'].astype(float)
+        # Read data into a Pandas DataFrame
+        df = pd.read_sql(f'SELECT * FROM {self.table}', con=connection)
 
-        # Scale the data
-        scaler = MinMaxScaler()
-        data_scaled = scaler.fit_transform(data)
+        le = preprocessing.LabelEncoder()
+        df['codigo'] = le.fit_transform(df['codigo'])
+        #df['acao'] = le.fit_transform(df['acao'])
+        #df['tipo'] = le.fit_transform(df['tipo'])
+        ##df['codigo'] = utils.multiclass.type_of_target(df['codigo'].astype('int'))
+        self.metric_date = df['data'][0]
+        remove_columns = ['data', 'acao', 'tipo']
+        df = df.drop(remove_columns, axis=1)
+        #rows, cols = df.shape
+        #print(f'Linhas: {rows}. Colunas: {cols}')     
+        # Prepare the data
+        x = df.drop('qtdeteorica', axis = 1)
+        #y = df['part']
+        y = df['qtdeteorica']
 
-        # Create lagged features
-        X = data_scaled[:-1]
-        y = data_scaled[1:]
+        # normalização dos dados
+        #min_max_scaler = StandardScaler()
+        #x = min_max_scaler.fit_transform(x)        
+        
+        # Split the data into training and testing sets
+        self.x_train, self.x_test, self.y_train, self.y_test = train_test_split(x, y, test_size=0.2, random_state=23)
 
-        # Split the data into training and test sets
-        train_size = int(0.8 * len(X))
-        X_train, X_test = X[:train_size], X[train_size:]
-        y_train, y_test = y[:train_size], y[train_size:]
+        # Create a logistic regression model
+        #self.model = LinearRegression()
 
-        # Reshape the input data to 3D for LSTM
-        X_train = np.reshape(X_train, (X_train.shape[0], 1, X_train.shape[1]))
-        X_test = np.reshape(X_test, (X_test.shape[0], 1, X_test.shape[1]))
+        # Close the connection
+        connection.close()
 
-        self.model = Sequential([
-            LSTM(50, activation='relu', input_shape=(X_train.shape[1], X_train.shape[2])),
-            Dense(1)
-        ])
+    def train(self):
+        print(f"Treinando o modelo")
 
-        model.compile(optimizer='adam', loss='mse')
-
-        history = model.fit(X_train, y_train, epochs=100, batch_size=32, validation_split=0.2, verbose=0)
-
-        loss = model.evaluate(X_test, y_test)
-        print(f'Test loss: {loss}')
+        # Train the model
+        self.model.fit(self.x_train, self.y_train)
+        try:
+            check_is_fitted(self.model)
+            self.model_dump = joblib.dump(self.model, 'src/.model.dump')
+        except NotFittedError as exc:
+            print(f"Model is not fitted yet.")
 
     def predict(self):
         print(f"Predicao")
@@ -82,13 +94,6 @@ class Pipeline:
             check_is_fitted(self.model)
         except NotFittedError as exc:
             print(f"Model is not fitted yet.")
-
-
-        y_pred = model.predict(X_test)
-        y_pred_inv = scaler.inverse_transform(y_pred)
-        y_test_inv = scaler.inverse_transform(y_test)
-
-
         y_pred = self.model.predict(self.x_test)
 
         r2score = r2_score(self.y_test, y_pred)

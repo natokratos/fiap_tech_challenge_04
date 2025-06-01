@@ -70,3 +70,6 @@ docker volume rm fiap_tech_challenge_04_pgdata
 
 
 * * * * * curl -v http://172.30.0.4:8080 >> /var/log/cron.log 2>&1
+
+https://medium.com/@techwithjulles/recurrent-neural-networks-rnns-and-long-short-term-memory-lstm-creating-an-lstm-model-in-13c88b7736e2
+
