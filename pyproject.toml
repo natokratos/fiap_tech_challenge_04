@@ -15,6 +15,7 @@ dependencies = [
     "standard-imghdr (>=3.13.0,<4.0.0)",
     "pandas (>=2.2.3)",
     "tensorflow (>=2.19.0)",
+    "tensorboard (>=2.19.0)",
     "scikit-learn (>=1.6)",
     "matplotlib (>=3.10.1)",
     "schedule (>=1.2.0)",

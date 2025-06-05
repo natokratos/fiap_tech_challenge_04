@@ -84,5 +84,34 @@ services:
       default:
         ipv4_address: 172.30.0.4
 
+  tensorflow:
+    container_name: tensorflow04
+    image: tensorflow/tensorflow
+    restart: always
+    tty: true
+    command: tensorboard --logdir /app/logs --host 0.0.0.0
+    ports:
+      - 6006:6006
+    volumes:
+      - ".:/app"
+    networks:
+      default:
+        ipv4_address: 172.30.0.5
+
+  portainer:
+    container_name: portainer04
+    image: portainer/portainer-ce:lts
+    restart: always
+    ports:
+      - 8000:8000
+      - 9443:9443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data portainer/portainer-ce:lts
+    networks:
+      default:
+        ipv4_address: 172.30.0.6
+
 volumes:
   pgdata:
+  portainer_data:
