@@ -6,68 +6,6 @@ networks:
         - subnet: 172.30.0.0/16
 
 services:
-  db:
-    build:
-      context: ./db
-      dockerfile: Dockerfile
-    container_name: db04
-    image: apppostgres
-    restart: always
-    ports:
-      - "127.0.0.1:5432:5432"   
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: app
-    volumes:
-      - pgdata:/var/lib/postgresql/data 
-    networks:
-      default:
-        ipv4_address: 172.30.0.2
-
-  adminer:
-    container_name: adminer04
-    image: adminer
-    restart: always
-    ports:
-      - 8090:8080
-    networks:
-      default:
-        ipv4_address: 172.30.0.3
-
-#   localstack:
-#     container_name: "localstack-main"
-#     image: localstack/localstack-pro  # required for Pro
-#     ports:
-#       - "127.0.0.1:4566:4566"            # LocalStack Gateway
-#     environment:
-# # Activate LocalStack Pro: https://docs.localstack.cloud/getting-started/auth-token/
-#      #"LOCALSTACK_AUTH_TOKEN": "${LOCALSTACK_AUTH_TOKEN:-}"  # required for Pro, not processed via template due to security reasons
-#      #"LOCALSTACK_API_KEY": "${LOCALSTACK_API_KEY:-}"
-#      #// LocalStack configuration: https://docs.localstack.cloud/references/configuration/
-#      "ACTIVATE_PRO": "0"
-#      #"DEBUG": "1"
-#      #"LS_LOG": "trace"
-#      #"PERSISTENCE": "false"
-#      #"AUTO_LOAD_POD": " "
-#      #"ENFORCE_IAM": "false"
-#      #"AWS_ACCESS_KEY_ID": "${AWS_ACCESS_KEY_ID:-local}"
-#      #"AWS_SECRET_ACCESS_KEY":  "${AWS_SECRET_ACCESS_KEY:-local}"
-#      #"AWS_ENDPOINT_URL": "http://localhost.localstack.cloud:4566"
-#      #"AWS_REGION": "us-east-1"
-#      #"AWS_DEFAULT_REGION": "us-east-1"
-#      #"IMAGE_NAME": "localstack/localstack:latest"
-#      #"LOCALSTACK_VOLUME_DIR": "/data"
-#     volumes:
-# # you could also place your main.tf in `./ready.d` and set "./ready.d:/etc/localstack/init/ready.d"
-#       - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
-#       - "../package.zip:/root/package.zip"
-#       - "../app_package.zip:/root/app_package.zip"
-#       - "./volume:/var/lib/localstack"
-#       - "/var/run/docker.sock:/var/run/docker.sock"
-#     networks:
-#       default:
-#         ipv4_address: 172.30.0.3
-
   app:
     build:
       context: .
@@ -102,8 +40,10 @@ services:
     container_name: portainer04
     image: portainer/portainer-ce:lts
     restart: always
+    command: 
+      - '--admin-password-file=/run/secrets/portainer_admin_password'
     ports:
-      - 8000:8000
+      - 9000:9000
       - 9443:9443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -111,7 +51,13 @@ services:
     networks:
       default:
         ipv4_address: 172.30.0.6
+    secrets:
+      - portainer_admin_password
 
 volumes:
   pgdata:
   portainer_data:
+
+secrets:
+  portainer_admin_password:
+    file: ./portainer/secrets/portainer-admin-password
