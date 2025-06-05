@@ -1,4 +1,4 @@
-FROM python:3.13.0
+FROM python:3.12.10
 
 RUN mkdir /app && \
         chmod 777 /app && \
@@ -79,7 +79,8 @@ WORKDIR /app
 
 # Install dependencies
 RUN poetry lock && \
-        poetry install && \
+        poetry show --tree && \
+        poetry install -v && \
         touch /var/log/cron.log && \
         crontab /etc/cron.d/cron-init && \
         chmod -Rf 777 /tmp/entrypoint.sh

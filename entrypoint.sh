@@ -1,5 +1,5 @@
 #!/bin/bash
 
-cron &
+#cron &
 
-poetry run python3.13 src/main.py
+poetry run python3.12 src/main.py
