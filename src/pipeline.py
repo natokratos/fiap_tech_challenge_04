@@ -16,7 +16,7 @@ class Pipeline:
 
     def __init__(self):
         self.symbol = 'DIS'
-        self.start_date = '2025-01-01'
+        self.start_date = '2023-01-01'
         self.end_date = '2025-05-01'
     
         print(f"Baixando os dados do Yahoo Finance ...\n")
@@ -51,8 +51,8 @@ class Pipeline:
 
         #print(f"X_train.shape {self.X_train.shape}")
         self.model = Sequential([
+            LSTM(300, activation='relu', return_sequences=True, input_shape=(self.X_train1.shape[1], self.X_train1.shape[2])),
             LSTM(300, activation='relu', input_shape=(self.X_train1.shape[1], self.X_train1.shape[2])),
-            #LSTM(100, activation='relu', return_sequences=True, input_shape=(self.X_train1.shape[1], self.X_train1.shape[2])),
             #Dropout(0,1),
             #LSTM(100),
             Dense(self.X_train1.shape[2])
@@ -63,7 +63,7 @@ class Pipeline:
         log_dir = "logs/fit/" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
         tensorboard_callback = TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-        self.model.fit(self.X_train1, self.y_train1, epochs=100, batch_size=32, validation_split=0.3, verbose=0, callbacks=[tensorboard_callback])
+        self.model.fit(self.X_train1, self.y_train1, epochs=300, batch_size=32, validation_split=0.3, verbose=0, callbacks=[tensorboard_callback])
 
         try:
             joblib.dump(self.model, 'src/.model.dump')
