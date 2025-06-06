@@ -6,8 +6,8 @@ from pipeline import Pipeline
 app = FastAPI()
 
 class ApiEndpoints:
-    def __init__(self):
-        pipeline = Pipeline()
+    def __init__(self, retrain : bool):
+        pipeline = Pipeline(retrain)
         
         @app.get("/")
         async def read_root():
@@ -17,7 +17,22 @@ class ApiEndpoints:
         def predict(prices:str):
             #pipeline = Pipeline()
 
-            loss, mae, mse, rmse, mape, x_test, y_test, y_pred, y_pred1, y_pred_inv, y_test_inv = pipeline.predict(prices)
-            return { "message" : f"{loss}|{mae}|{mse}|{rmse}|{mape}|{x_test}|{y_test}|{y_pred}|{y_pred1}|{y_pred_inv}|{y_test_inv}"}
-        
-server = ApiEndpoints()
+            mae, mse, rmse, mape = pipeline.predict(prices)
+            return { "message" : f"mae: {mae}|mse: {mse}|rmse: {rmse}|mape: {mape}"}
+            #29508039744.178253|5.796406865801174e+21|76134137322.23656|6090.248222127322
+            #87940498790.81458|5.059217249030164e+22|224927038148.59973|17566.530693037814
+
+retrain = False
+if "RETRAIN" in os.environ:
+    retrain = (os.environ["RETRAIN"].lower() is "true")
+
+path = "./src/.model_dump"
+if os.path.exists(path):
+    retrain = False
+else:
+    retrain = True
+
+retrain = True
+
+print(f"RETRAIN [{retrain}]")
+server = ApiEndpoints(retrain)

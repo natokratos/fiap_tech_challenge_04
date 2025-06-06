@@ -1,44 +1,60 @@
 # fiap_tech_challenge_04
 
 ## Pre-requisitos
-- Deve ser aberto no VSCODE, para que execute o docker-compose que cria os servicos docker necessarios para que funcione.
-- O Python 3.13.0 deve estar instalado
-- Este projeto usa o poetry para controlar as dependecias, localizadas no arquivo pyproject.toml.
+- O Docker deve estar instalado na maquina em que o projeto sera executado.
+- Ter um browser instalado na máquina ou ferramenta para acessar a API (curl, por exemplo)
 
 ## Objetivo
-Este projeto tem como objetivo baixar os dados das Carteiras Diarias do movimento da B3 e carregar num banco de dados para que fiquem disponiveis para uma API. Esta tem a funcao de carregar os dados deste banco de dados e treinar um modelo de Machine Learning que fara a predicao dos valores de quantidade teorica baseado nos dados historicos ja existentes. Este modelo ficara disponivel para que uma aplicacao de Dashboard obtenha as metricas relacionada.
+Este projeto tem como objetivo criar um LSTM para fazer a predição de valores do fechamento da bolsa de valores da empresa The Walt Disney Company (DIS). Ele utiliza os valores do Yahoo Finance e cria toda a pipeline de desenvolvimento, desde a criação do modelo preditivo até o deploy em uma API que permite a previsão de preço de ações.
 
-## Funcionamento
-- **Ambiente Virtual**
-Existe uma configuracao de devcontainer usada pelo VSCODE. Ela chama um docker-compose que sobe um banco de dados postgres localmentte no seguinte endereco: **http://localhost:8090**.
-Para acessa-lo use o usuario postgres e senha postgres. Existe uma tabela chamada raw_data que armazena todos os dados baixados da B3 da Carteira do Dia.
+## Operação
+A aplicação engloba 3 containers:
+- Tech04: aquele que tem a API para realizar as predicoes. Ela roda em Python3.12;
+- Tensorboard04: ferramenta de monitoração do modelode LSTM;
+- Portainer04: ferramenta de monitoração dos containers, tanto recursos de infra quanto dos logs e saúde destes.
 
-- **Download**
+Para executá-los, basta digitar a seguinte linha de comando:
 
-Nesta fase os arquivos das Carte Diarias do movimento da B3, que sao baixados num diretorio dentro deste repositorio chamado **temp_files/downloaded**. Logo em seguida sao movidos para o diretorio **temp_files/AAAAMMDD**, para que fiquem organizados por data, ja que a data nao existe dentro do arquivo como sendo uma coluna.
-- **Banco de Dados**
+docker compose -f docker-compose.yml up -d
 
-Com o arquivo da movimentacao diaria baixado, suas informacoes sao inseridas numa tabela de uma banco de dados POSTGRES (iniciado pelo ambiente virtual do VSCODE) chamada raw_data.
-- **API**
+Basta esperar que ele baixe as imagens e as coloque no ar. Para verificar se a aplicação subiu corretamente, basta olhar o log do container tech04:
 
-Para executara a API basta executar os seguintes comandos:
-- source venv_3.13.0/bin/activate
-- poetry run python3.13 src/main.py
-Apos a inicializacao, deve ser deixada em execucao para que a aplicacao de Dashboard de Metricas funcione.
+docker logs tech04 -f
 
-A documentacao da API pode ser localizada neste endereco **http://localhost:8080/docs**
+Ela estará no ar quando aparecerem a seguintes mensagens:
 
-Os endpoints disponiveis sao:
-- **load**: faz o download e carrega os dados da tabela raw_data do banco de dados e os deixa disponivel para um modelo de Regressao Linear.
-- **train**: treina o modelo com todos os dados carregados atualmente e anteriormente
-- **predict**: faz a previsao das quantidades teoricas baseado no treinamento do modelo feito anteriormente
-## Dashboard de Metricas
+INFO:     Started server process [XXXXX]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
 
-Um dashboard de metricas simples sobre a qualidade do modelo. Para executa-lo basta executar os seguintes comandos (em outro terminal):
-- source venv_3.13.0/bin/activate
-- poetry run python3.13 src/dashboard.py
+A API já faz a cargs dos dados e o treinamento do modelo ao iniciar, caso não tenha sido feito, verificando se o arquivo **src/.model.dump** existe e se a variável de ambiente **RETRAIN** do docker-compose existe e está como **true**.
 
-A aplicacao executara os endpoints acima em ordem (load, train e predict) e obtera as metricas em relacao a qualidade do modelo. Estas sao exibidas na saida do console.
+Fica disponível um endpoint chamado **predict**, que recebe um arquivo de entrada com valores para serem usados na predição. Já existe na raiz do projeto um arquivo pronto chamado **predict_input**, para ser usado como teste. A chamada do endpoint fica desta forma, a partir da raiz do projeto:
 
-## Melhorias
-Existem melhorias a serem feitas na aplicacao, como salvar o modelo de uma forma mais eficiente para o uso das APIs e uma aplicacao que efetivamente mostre um grafico sobre o desempenho do modelo.
+curl -v http://172.30.0.4:8080/predict?prices="./predict_input"
+
+## Monitoração
+A monitoração pode ser feita nestes 2 endpoints, acessando-os pelo browser:
+- Portainer: ferramenta de monitoração dos containers, tanto recursos de infra quanto dos logs e saúde destes.
+
+http://172.30.0.6:9000
+
+Usuario: admin
+Senha: adminportainer
+
+- Tensorboard: ferramenta de monitoração do modelode LSTM.
+
+http://172.30.0.5:6006/#timeseries&run=fit%2F20250605-154514%2Ftrain
+
+
+## Qualidade do Modelo
+Foram medidas a precision e a loss do modelo (mean_squared_error), que ficaram em torno de 80,2% e 1,21% respectivamente.
+
+Nas predicoes usando o arquivo predic_inout na raiz deste projeto, as medições foram estas e ficaram em torno destes valores:
+
+MAE: 109.59985727372306
+MSE: 12931.893355177934
+RMSE: 113.71848290923482
+MAPE: 1.060040553927951
+
+O MAPE ficou em torno de 2,5% , sendo assim considero que o modelo ficou com uma precisão e erros aceitáveis. Pode melhorar mais, trabalhando no treinamento e talvez na preparação dos dados.
