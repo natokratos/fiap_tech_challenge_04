@@ -74,3 +74,27 @@ docker volume rm fiap_tech_challenge_04_pgdata
 https://medium.com/@techwithjulles/recurrent-neural-networks-rnns-and-long-short-term-memory-lstm-creating-an-lstm-model-in-13c88b7736e2
 
 curl -v http://172.30.0.4:8080/predict?prices="./predict_input"
+
+50
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 90ms/step - accuracy: 0.1250 - loss: 0.0484 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 183ms/step - accuracy: 0.1250 - loss: 0.0484 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_loss: 0.0000e+00
+Test loss: [0.04843377321958542, 0.125, 0.0, 0.0, 0.0]
+
+70
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 94ms/step - accuracy: 0.1875 - loss: 0.0505 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 186ms/step - accuracy: 0.1875 - loss: 0.0505 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_loss: 0.0000e+00
+Test loss: [0.050489068031311035, 0.1875, 0.0, 0.0, 0.0]
+
+100
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 87ms/step - accuracy: 0.2500 - loss: 0.0510 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 169ms/step - accuracy: 0.2500 - loss: 0.0510 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_loss: 0.0000e+00
+Test loss: [0.05101064220070839, 0.25, 0.0, 0.0, 0.0]
+
+300
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 94ms/step - accuracy: 0.2500 - loss: 0.0583 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 171ms/step - accuracy: 0.2500 - loss: 0.0583 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_loss: 0.0000e+00
+Test loss: [0.05831832066178322, 0.25, 0.0, 0.0, 0.0]
+
+500
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 93ms/step - accuracy: 0.2500 - loss: 0.0610 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 175ms/step - accuracy: 0.2500 - loss: 0.0610 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_loss: 0.0000e+00
+Test loss: [0.06102947145700455, 0.25, 0.0, 0.0, 0.0]
+
+800
+1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 91ms/step - accuracy: 0.2500 - loss: 0.0675 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_1/1 ━━━━━━━━━━━━━━━━━━━━ 0s 170ms/step - accuracy: 0.2500 - loss: 0.0675 - mae_loss: 0.0000e+00 - mape_loss: 0.0000e+00 - mse_loss: 0.0000e+00
+Test loss: [0.0675036609172821, 0.25, 0.0, 0.0, 0.0]
