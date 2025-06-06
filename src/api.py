@@ -32,7 +32,5 @@ if os.path.exists(path):
 else:
     retrain = True
 
-retrain = True
-
 print(f"RETRAIN [{retrain}]")
 server = ApiEndpoints(retrain)
